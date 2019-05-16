@@ -18,7 +18,7 @@ spec:
           name: "base-centos7:latest"
   source:
     git:
-      uri: "https://github.com/ycornamusaz/s2i-go-webapp.git"
+      uri: "https://github.com/ycornamusaz/s2i-golang-builder.git"
     type: Git
   strategy:
     type: Docker
