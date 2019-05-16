@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount | quote }}
+  replicas: {{ .Values.replicaCount }}
   triggers:
     - type: ConfigChange
     - type: ImageChange
@@ -43,12 +43,12 @@ spec:
 
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
 
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: http
 
       dnsPolicy: ClusterFirst
