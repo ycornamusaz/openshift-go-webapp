@@ -1,5 +1,4 @@
-
---
+---
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
@@ -16,14 +15,10 @@ spec:
       imageChange:
         from:
           kind: ImageStreamTag
-          name: openshift/base-centos7:latest
-    - type: "GitHub"
-      github:
-        secretReference:
-          name: "github_webhook"
+          name: "base-centos7:latest"
   source:
     git:
-      uri: "https://github.com/ycornamusaz/s2i-go-webapp"
+      uri: "https://github.com/ycornamusaz/s2i-go-webapp.git"
     type: Git
   strategy:
     type: Docker
@@ -31,7 +26,7 @@ spec:
     to:
       kind: ImageStreamTag
       name: golang-builder-{{ template "go-webapp.fullname" . }}:latest
---
+---
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
@@ -49,12 +44,15 @@ spec:
         from:
           kind: ImageStreamTag
           name: golang-builder-{{ template "go-webapp.fullname" . }}:latest
+    - type: GitHub
+      github:
+        secret: {{ .Values.github_webhook | quote }}
   source:
     git:
-      uri: "https://github.com/ycornamusaz/s2i-go-webapp"
+      uri: "https://github.com/ycornamusaz/go-webapp.git"
     type: Git
   strategy:
-    type: sourceStrategy:
+    sourceStrategy:
       from:
         kind: ImageStreamTag
         name: golang-builder-{{ template "go-webapp.fullname" . }}:latest

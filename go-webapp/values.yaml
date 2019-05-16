@@ -7,11 +7,11 @@ replicaCount: 1
 nameOverride: ""
 fullnameOverride: ""
 
-domain: "wrk176.wrk.lsn.camptocamp.com"
+domain: ""
 github_webhook: ""
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 8123
 
 resources: {}

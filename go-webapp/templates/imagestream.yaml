@@ -28,7 +28,7 @@ spec:
 kind: ImageStream
 apiVersion: image.openshift.io/v1
 metadata:
-  name: openshift/base-centos7
+  name: base-centos7
   labels:
     app.kubernetes.io/name: {{ include "go-webapp.name" . }}
     helm.sh/chart: {{ include "go-webapp.chart" . }}
