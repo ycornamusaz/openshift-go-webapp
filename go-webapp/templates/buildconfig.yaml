@@ -1,0 +1,64 @@
+
+--
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: golang-builder-{{ include "go-webapp.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "go-webapp.name" . }}
+    helm.sh/chart: {{ include "go-webapp.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  runPolicy: Serial
+  triggers:
+    - type: ImageChange
+      imageChange:
+        from:
+          kind: ImageStreamTag
+          name: openshift/base-centos7:latest
+    - type: "GitHub"
+      github:
+        secretReference:
+          name: "github_webhook"
+  source:
+    git:
+      uri: "https://github.com/ycornamusaz/s2i-go-webapp"
+    type: Git
+  strategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: golang-builder-{{ template "go-webapp.fullname" . }}:latest
+--
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: go-webapp-{{ include "go-webapp.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "go-webapp.name" . }}
+    helm.sh/chart: {{ include "go-webapp.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  runPolicy: Serial
+  triggers:
+    - type: ImageChange
+      imageChange:
+        from:
+          kind: ImageStreamTag
+          name: golang-builder-{{ template "go-webapp.fullname" . }}:latest
+  source:
+    git:
+      uri: "https://github.com/ycornamusaz/s2i-go-webapp"
+    type: Git
+  strategy:
+    type: sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: golang-builder-{{ template "go-webapp.fullname" . }}:latest
+  output:
+    to:
+      kind: ImageStreamTag
+      name: go-webapp-{{ template "go-webapp.fullname" . }}:latest

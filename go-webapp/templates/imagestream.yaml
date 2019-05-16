@@ -1,0 +1,47 @@
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: go-webapp-{{ include "go-webapp.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "go-webapp.name" . }}
+    helm.sh/chart: {{ include "go-webapp.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  tag:
+    name: latest
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: golang-builder-{{ include "go-webapp.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "go-webapp.name" . }}
+    helm.sh/chart: {{ include "go-webapp.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  tag:
+    name: latest
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: openshift/base-centos7
+  labels:
+    app.kubernetes.io/name: {{ include "go-webapp.name" . }}
+    helm.sh/chart: {{ include "go-webapp.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  dockerImageRepository: "docker.io/openshift/base-centos7"
+  lookupPolicy:
+    local: false
+  tags:
+    - name: latest
+      from:
+        kind: DockerImage
+        name: openshift/base-centos7:latest
+      referencePolicy:
+        type: Source

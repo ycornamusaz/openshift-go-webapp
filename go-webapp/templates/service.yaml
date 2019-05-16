@@ -7,11 +7,13 @@ metadata:
     helm.sh/chart: {{ include "go-webapp.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+status:
+  loadBalancer: {}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: 8123
       protocol: TCP
       name: http
   selector:

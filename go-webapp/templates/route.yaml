@@ -1,0 +1,17 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "go-webapp.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "go-webapp.name" . }}
+    helm.sh/chart: {{ include "go-webapp.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  host: {{ .Values.domain }}
+  to:
+    kind: Service
+    name: {{ include "go-webapp.fullname" . }}
+  port:
+    targetPort: {{ .Values.service.port }}

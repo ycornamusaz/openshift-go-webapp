@@ -4,31 +4,15 @@
 
 replicaCount: 1
 
-image:
-  repository: nginx
-  tag: stable
-  pullPolicy: IfNotPresent
-
 nameOverride: ""
 fullnameOverride: ""
 
+domain: "wrk176.wrk.lsn.camptocamp.com"
+github_webhook: ""
+
 service:
   type: ClusterIP
-  port: 80
-
-ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths: []
-
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  port: 8123
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

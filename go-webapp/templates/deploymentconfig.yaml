@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DeploymentConfig
 metadata:
   name: {{ include "go-webapp.fullname" . }}
   labels:
@@ -9,10 +9,20 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "go-webapp.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+#  selector:
+#    matchLabels:
+#      app.kubernetes.io/name: {{ include "go-webapp.name" . }}
+#      app.kubernetes.io/instance: {{ .Release.Name }}
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - go-webapp
+        from:
+          kind: ImageStreamTag
+          name: go-webapp-{{ template "go-webapp.fullname" . }}:latest
   template:
     metadata:
       labels:
@@ -21,31 +31,29 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: go-webapp-{{ template "go-webapp.fullname" . }}:latest"
+          imagePullPolicy: IfNotPresent
+
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8123
               protocol: TCP
+
+          securityContext:
+            capabilities: {}
+            privileged: false
+
+          resources: {}
+
           livenessProbe:
             httpGet:
               path: /
               port: http
+
           readinessProbe:
             httpGet:
               path: /
               port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
+
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
